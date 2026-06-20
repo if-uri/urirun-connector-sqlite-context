@@ -4,7 +4,10 @@
   "version": "0.1.1",
   "summary": "Local data, artifacts, checks and logs over data://, artifact://, check:// and log://.",
   "repository": "https://github.com/if-uri/urirun-connector-sqlite-context",
-  "install": "pip install git+https://github.com/if-uri/urirun-connector-sqlite-context.git@v0.1.1",
+  "install": {
+    "mode": "urirun-extra",
+    "pipSpec": "urirun-connector-sqlite-context @ git+https://github.com/if-uri/urirun-connector-sqlite-context.git@v0.1.1"
+  },
   "routes": [
     "data://host/datasets/query/list",
     "data://host/dataset/command/create",
@@ -18,7 +21,9 @@
     "log://host/logs/query/recent",
     "log://host/daily/command/write"
   ],
-  "adapterKinds": ["argv-template"],
+  "adapterKinds": [
+    "argv-template"
+  ],
   "examples": [
     {
       "uri": "data://host/dataset/command/create",

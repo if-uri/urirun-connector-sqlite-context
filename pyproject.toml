@@ -25,6 +25,9 @@ Repository = "https://github.com/if-uri/urirun-connector-sqlite-context"
 [project.scripts]
 urirun-sqlite-context = "urirun_connector_sqlite_context.cli:main"
 
+[project.entry-points."urirun.bindings"]
+sqlite-context = "urirun_connector_sqlite_context:urirun_bindings"
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["urirun_connector_sqlite_context*"]

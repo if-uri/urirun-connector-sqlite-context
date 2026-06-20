@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+- Add follow-up tasks for IFURI-016 matrix coverage and richer SQLite context
+  route documentation.
+
 ### Changed
 - Link README related projects to the `if-uri/urirun` runtime repository.
 - Update README URI payload examples to use `dataset_schema`.
