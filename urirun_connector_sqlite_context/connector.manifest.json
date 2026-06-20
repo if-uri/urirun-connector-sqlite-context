@@ -1,0 +1,45 @@
+{
+  "id": "sqlite-context",
+  "name": "SQLite Context Store",
+  "version": "0.1.0",
+  "summary": "Local data, artifacts, checks and logs over data://, artifact://, check:// and log://.",
+  "repository": "https://github.com/if-uri/urirun-connector-sqlite-context",
+  "install": "pip install git+https://github.com/if-uri/urirun-connector-sqlite-context.git@v0.1.0",
+  "routes": [
+    "data://host/datasets/query/list",
+    "data://host/dataset/command/create",
+    "data://host/record/command/upsert",
+    "data://host/records/query/search",
+    "data://host/sql/query/read-only",
+    "artifact://host/artifact/command/register",
+    "artifact://host/artifacts/query/list",
+    "check://host/check/command/add",
+    "check://host/checks/query/recent",
+    "log://host/logs/query/recent",
+    "log://host/daily/command/write"
+  ],
+  "adapterKinds": ["argv-template"],
+  "examples": [
+    {
+      "uri": "data://host/dataset/command/create",
+      "payload": {
+        "name": "domains",
+        "dataset_schema": "{\"type\":\"object\",\"required\":[\"domain\"],\"properties\":{\"domain\":{\"type\":\"string\"}}}"
+      }
+    },
+    {
+      "uri": "data://host/record/command/upsert",
+      "payload": {
+        "dataset": "domains",
+        "key": "ifuri.com",
+        "data": "{\"domain\":\"ifuri.com\",\"url\":\"https://ifuri.com\"}"
+      }
+    },
+    {
+      "uri": "log://host/logs/query/recent",
+      "payload": {
+        "limit": 20
+      }
+    }
+  ]
+}
