@@ -20,7 +20,7 @@ urirun validate bindings.json
 urirun compile bindings.json --out registry.json
 
 urirun run 'data://host/dataset/command/create' registry.json \
-  --payload '{"name":"domains","schema":"{\"type\":\"object\"}"}' \
+  --payload '{"name":"domains","dataset_schema":"{\"type\":\"object\"}"}' \
   --execute \
   --allow 'data://host/*'
 ```
@@ -35,7 +35,7 @@ make docker-test
 
 ## Related projects
 
-- Runtime: [tellmesh/urirun](https://github.com/tellmesh/urirun)
+- Runtime: [if-uri/urirun](https://github.com/if-uri/urirun)
 - Docs: [docs.ifuri.com/connectors.html](https://docs.ifuri.com/connectors.html) · [authoring a connector](https://docs.ifuri.com/connector-authoring.html)
 - Hub page: [connect.ifuri.com/connectors/sqlite-context](https://connect.ifuri.com/connectors/sqlite-context)
 - Connector hub: [connect.ifuri.com](https://connect.ifuri.com)
