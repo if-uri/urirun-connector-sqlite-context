@@ -9,7 +9,7 @@ It generates normal urirun bindings through decorators and executes them through
 ## Install
 
 ```bash
-pip install "git+https://github.com/if-uri/urirun-connector-sqlite-context.git@v0.1.0"
+pip install "git+https://github.com/if-uri/urirun-connector-sqlite-context.git@v0.1.1"
 ```
 
 ## Use
@@ -24,6 +24,9 @@ urirun run 'data://host/dataset/command/create' registry.json \
   --execute \
   --allow 'data://host/*'
 ```
+
+The connector owns its SQLite runtime and does not import `urirun.host_db` from
+the core runtime.
 
 ## Test
 
