@@ -2,6 +2,8 @@
 
 - [x] Publish `if-uri/urirun-connector-sqlite-context`.
 - [x] Move `host_db` runtime code into this connector.
+- [x] Expose `urirun_bindings()` through the stable `urirun.bindings`
+      entry-point group.
 - [ ] Add this connector to IFURI-016 full host-node Docker matrix with
       dataset, record, artifact and log routes.
 - [ ] Add import/export helpers for common dataset schemas.

@@ -1,8 +1,15 @@
 {
   "id": "sqlite-context",
   "name": "SQLite Context Store",
+  "status": "available",
   "version": "0.1.1",
   "summary": "Local data, artifacts, checks and logs over data://, artifact://, check:// and log://.",
+  "uriSchemes": [
+    "data",
+    "artifact",
+    "check",
+    "log"
+  ],
   "repository": "https://github.com/if-uri/urirun-connector-sqlite-context",
   "install": {
     "mode": "urirun-extra",

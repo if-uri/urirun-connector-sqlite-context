@@ -25,6 +25,14 @@ urirun run 'data://host/dataset/command/create' registry.json \
   --allow 'data://host/*'
 ```
 
+After installation, `urirun` can discover this connector automatically through
+the `urirun.bindings` entry-point group:
+
+```bash
+urirun discover --out connectors.bindings.json --registry-out connectors.registry.json
+urirun list --entry-points
+```
+
 The connector owns its SQLite runtime and does not import `urirun.host_db` from
 the core runtime.
 
