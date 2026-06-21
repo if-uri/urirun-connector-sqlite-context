@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Changed
+- Reuse the urirun host SQLite backend (`urirun.host.host_db`) instead of a
+  bundled copy of the storage logic. The connector now owns only the URI route
+  declarations and the JSON envelope (509 -> 186 lines); urirun is the single
+  source of truth. Routes, manifest and CLI behaviour are unchanged.
+
 ### Added
 - Add follow-up tasks for IFURI-016 matrix coverage and richer SQLite context
   route documentation.
