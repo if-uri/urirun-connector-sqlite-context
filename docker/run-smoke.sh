@@ -11,7 +11,7 @@ echo "==> direct connector CLI"
 urirun-sqlite-context dataset-create \
   --db "$DB" \
   --name domains \
-  --schema '{"type":"object","required":["domain"],"properties":{"domain":{"type":"string"}}}' > .docker-smoke/dataset.json
+  --dataset_schema '{"type":"object","required":["domain"],"properties":{"domain":{"type":"string"}}}' > .docker-smoke/dataset.json
 urirun-sqlite-context record-upsert \
   --db "$DB" \
   --dataset domains \
@@ -48,12 +48,14 @@ base = Path(".docker-smoke")
 dataset = json.loads((base / "dataset.json").read_text())
 record = json.loads((base / "record.json").read_text())
 run = json.loads((base / "urirun-result.json").read_text())
-run_payload = json.loads(run["result"]["stdout"])
+# isolated handlers return the connector result under result.value (no stdout).
+run_payload = run["result"]["value"]
 tools = json.loads((base / "mcp-tools.json").read_text())
 card = json.loads((base / "a2a-card.json").read_text())
 
 assert dataset["ok"] is True, dataset
-assert record["record"]["key"] == "ifuri.com", record
+assert dataset["result"]["value"]["ok"] is True, dataset
+assert record["result"]["value"]["record"]["key"] == "ifuri.com", record
 assert run["ok"] is True, run
 assert run_payload["records"][0]["key"] == "ifuri.com", run_payload
 assert any(tool["name"] == "data_host_records_query" for tool in tools["tools"]), tools

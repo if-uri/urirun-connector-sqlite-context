@@ -3,8 +3,14 @@
 `sqlite-context` is an external urirun connector for local host memory:
 datasets, records, artifacts, checks and logs.
 
-It generates normal urirun bindings through decorators and executes them through
-`urirun-sqlite-context`.
+Each route is declared once as a typed `@<scheme>.handler(..., isolated=True)`:
+the function signature is the input schema and the body is the implementation —
+no argv template, no `_exec.py` shim, no `run_action` dispatcher. `isolated=True`
+keeps every route **registry-portable**: the runtime runs it out-of-process via
+the shared `python -m urirun.exec` runner, hydrating the handler from the
+serialized `python: {module, export}` descriptor. A route therefore executes from
+a compiled file registry, `urirun run`, or a served node alike — with only the
+package importable, no console-script install required.
 
 ## Install
 
@@ -33,8 +39,9 @@ urirun discover --out connectors.bindings.json --registry-out connectors.registr
 urirun list --entry-points
 ```
 
-The connector owns its SQLite runtime and does not import `urirun.host_db` from
-the core runtime.
+The connector owns the URI route declarations and the JSON envelope; the storage
+logic lives once in urirun's host SQLite backend (`urirun.host.host_db`), so the
+runtime stays the single source of truth.
 
 ## Test
 

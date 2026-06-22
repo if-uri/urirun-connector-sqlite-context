@@ -1,27 +1,25 @@
-.PHONY: test smoke docker-test clean
+.PHONY: help manifest bindings smoke test docker-test clean
 
-test:
+help: ## List targets
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-12s %s\n",$$1,$$2}'
+
+manifest: ## Print the connector manifest
+	urirun-sqlite-context manifest
+
+bindings: ## Print urirun bindings
+	urirun-sqlite-context bindings
+
+smoke: ## bindings -> urirun connectors smoke (validate/compile/run/MCP/A2A)
+	tmp=$$(mktemp -d); \
+	urirun-sqlite-context bindings | urirun connectors smoke - \
+	  --run 'log://host/daily/command/write' \
+	  --payload "{\"db\":\"$$tmp/host.db\",\"stream\":\"daily\",\"event\":\"smoke.write\"}" \
+	  --allow 'log://host/*' --name sqlite-context
+
+test: ## Run the test suite
 	python3 -m pytest -q
 
-smoke:
-	tmp=$$(mktemp -d); \
-	mkdir -p "$$tmp/bin"; \
-	printf '%s\n' '#!/usr/bin/env sh' 'exec python3 -m urirun_connector_sqlite_context.cli "$$@"' > "$$tmp/bin/urirun-sqlite-context"; \
-	chmod +x "$$tmp/bin/urirun-sqlite-context"; \
-	export PATH="$$tmp/bin:$$PATH"; \
-	db="$$tmp/host.db"; \
-	python3 -m urirun_connector_sqlite_context.cli dataset-create --db "$$db" --name domains --schema '{"type":"object","required":["domain"],"properties":{"domain":{"type":"string"}}}' > "$$tmp/dataset.json"; \
-	python3 -m urirun_connector_sqlite_context.cli bindings > "$$tmp/bindings.json"; \
-	urirun validate "$$tmp/bindings.json"; \
-	urirun compile "$$tmp/bindings.json" --out "$$tmp/registry.json"; \
-	urirun run 'data://host/record/command/upsert' "$$tmp/registry.json" \
-	  --payload "{\"db\":\"$$db\",\"dataset\":\"domains\",\"key\":\"ifuri.com\",\"data\":\"{\\\"domain\\\":\\\"ifuri.com\\\"}\"}" \
-	  --execute --allow 'data://host/*' > "$$tmp/run.json"; \
-	python3 -c 'import json,sys; data=json.load(open(sys.argv[1])); assert data["ok"], data; out=json.loads(data["result"]["stdout"]); assert out["record"]["key"] == "ifuri.com", out' "$$tmp/run.json"; \
-	python3 -m urirun.v2_mcp tools "$$tmp/registry.json" > "$$tmp/tools.json"; \
-	python3 -m urirun.v2_mcp card "$$tmp/registry.json" --name sqlite-context --url http://localhost/ > "$$tmp/card.json"
-
-docker-test:
+docker-test: ## Run connector in Docker and verify registry, MCP and A2A
 	docker compose up --build --abort-on-container-exit --exit-code-from tester
 	docker compose down -v --remove-orphans
 
