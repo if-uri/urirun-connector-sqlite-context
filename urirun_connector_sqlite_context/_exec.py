@@ -1,23 +1,30 @@
 # Author: Tom Sapletta · https://tom.sapletta.com
 # Part of the ifURI solution.
 
+"""Out-of-process executor for sqlite-context routes.
+
+The compiled v2 registry runs each route as an ``argv`` template that invokes
+``python3 -m urirun_connector_sqlite_context._exec <subcommand> ...``. urirun only
+spawns this template under ``--execute``, so this module always runs the route
+logic (via ``core.run_action``) and prints the connector's JSON result to stdout.
+"""
+
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 
-import urirun
-
-from .core import connector_manifest, run_action, urirun_bindings
-
-
+from . import core
 
 
 def _add_db(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--db", default="")
 
 
-def register(sub) -> None:
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="urirun_connector_sqlite_context._exec")
+    sub = parser.add_subparsers(dest="command", required=True)
 
     datasets = sub.add_parser("datasets-list", help="List datasets")
     _add_db(datasets)
@@ -83,28 +90,19 @@ def register(sub) -> None:
     logs.add_argument("--stream", default="")
     logs.add_argument("--limit", type=int, default=20)
 
-
-def dispatch(args) -> int:
-    data = vars(args)
-    command = data.pop("command")
-    try:
-        result = run_action(command, **data)
-    except Exception as exc:  # noqa: BLE001 - connector CLI reports JSON errors.
-        urirun.connector_emit({"ok": False, "connector": "sqlite-context", "action": command, "error": str(exc)})
-        return 2
-    urirun.connector_emit(result)
-    return 0 if result.get("ok") else 2
+    return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    return urirun.connector_cli(
-        "urirun-sqlite-context",
-        manifest=connector_manifest,
-        bindings=urirun_bindings,
-        register=register,
-        dispatch=dispatch,
-        argv=argv,
-    )
+    args = _build_parser().parse_args(argv)
+    kwargs = {k: v for k, v in vars(args).items() if k != "command"}
+    try:
+        result = core.run_action(args.command, **kwargs)
+    except Exception as exc:  # noqa: BLE001 - connector executor reports JSON errors.
+        print(json.dumps({"ok": False, "connector": core.CONNECTOR_ID, "action": args.command, "error": str(exc)}))
+        return 2
+    print(json.dumps(result))
+    return 0 if result.get("ok") else 2
 
 
 if __name__ == "__main__":

@@ -2,11 +2,14 @@
 # Part of the ifURI solution.
 
 from .core import (
+    CONNECTOR_ID,
     add_check,
     connector_manifest,
     create_dataset,
+    list_artifacts,
     list_datasets,
     log_write,
+    main,
     recent_checks,
     recent_logs,
     register_artifact,
@@ -18,11 +21,14 @@ from .core import (
 )
 
 __all__ = [
+    "CONNECTOR_ID",
     "add_check",
     "connector_manifest",
     "create_dataset",
+    "list_artifacts",
     "list_datasets",
     "log_write",
+    "main",
     "recent_checks",
     "recent_logs",
     "register_artifact",
