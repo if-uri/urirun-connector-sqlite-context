@@ -8,5 +8,27 @@
   "install": {
     "mode": "urirun-extra",
     "pipSpec": "urirun-connector-sqlite-context @ git+https://github.com/if-uri/urirun-connector-sqlite-context.git@v0.1.1"
-  }
+  },
+  "routes": [
+    "artifact://host/artifact/command/register",
+    "artifact://host/artifacts/query/list",
+    "check://host/check/command/add",
+    "check://host/checks/query/recent",
+    "data://host/dataset/command/create",
+    "data://host/datasets/query/list",
+    "data://host/record/command/upsert",
+    "data://host/records/query/search",
+    "data://host/sql/query/read-only",
+    "log://host/daily/command/write",
+    "log://host/logs/query/recent"
+  ],
+  "uriSchemes": [
+    "artifact",
+    "check",
+    "data",
+    "log"
+  ],
+  "adapterKinds": [
+    "local-function"
+  ]
 }
