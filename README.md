@@ -3,6 +3,9 @@
 `sqlite-context` is an external urirun connector for local host memory:
 datasets, records, artifacts, checks and logs.
 
+Schematy URI: `data://` (datasets + records + read-only SQL), `artifact://`
+(artifact store), `check://` (check results), `log://` (log entries).
+
 Each route is declared once as a typed `@<scheme>.handler(..., isolated=True)`:
 the function signature is the input schema and the body is the implementation —
 no argv template, no `_exec.py` shim, no `run_action` dispatcher. `isolated=True`
