@@ -27,13 +27,15 @@ import json
 from typing import Any
 
 import urirun
+
+from . import _urirun_compat
 from urirun.host import host_db
 
 CONNECTOR_ID = "sqlite-context"
-DATA = urirun.connector(CONNECTOR_ID, scheme="data")
-ARTIFACT = urirun.connector(CONNECTOR_ID, scheme="artifact")
-CHECK = urirun.connector(CONNECTOR_ID, scheme="check")
-LOG = urirun.connector(CONNECTOR_ID, scheme="log")
+DATA = _urirun_compat.connector(CONNECTOR_ID, scheme="data")
+ARTIFACT = _urirun_compat.connector(CONNECTOR_ID, scheme="artifact")
+CHECK = _urirun_compat.connector(CONNECTOR_ID, scheme="check")
+LOG = _urirun_compat.connector(CONNECTOR_ID, scheme="log")
 
 
 def _json_value(value: Any, default: Any):
@@ -138,16 +140,35 @@ def urirun_bindings() -> dict[str, Any]:
     """Serializable v2 bindings for this connector (entry point: urirun.bindings)."""
     return DATA.bindings()
 
+@DATA.handler("data://host/doctor/query/report", isolated=True, meta={"label": "Connector readiness report"})
+def doctor() -> dict[str, Any]:
+    """Return a safe, read-only connector readiness report for CI smoke tests."""
+    return {
+        "ok": True,
+        "connector": CONNECTOR_ID,
+        "version": _connector_version(),
+        "status": "ready",
+    }
+
+
+def _connector_version() -> str:
+    try:
+        from importlib.metadata import version
+
+        return version("urirun-connector-sqlite-context")
+    except Exception:
+        return "0.1.0"
+
 
 def connector_manifest() -> dict[str, Any]:
     """Full manifest: prose (connector.manifest.json) + routes/uriSchemes/
     adapterKinds/examples derived from the handlers."""
-    return DATA.manifest(urirun.load_manifest(__package__))
+    return DATA.manifest(_urirun_compat.load_manifest(__package__))
 
 
 def main(argv: list[str] | None = None) -> int:
     """Console-script entry point: subcommands + dispatch derived from the handlers."""
-    return DATA.cli(argv, manifest_prose=urirun.load_manifest(__package__))
+    return DATA.cli(argv, manifest_prose=_urirun_compat.load_manifest(__package__))
 
 
 if __name__ == "__main__":
